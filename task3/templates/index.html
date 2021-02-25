@@ -1,0 +1,129 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>task3</title>
+
+<link href="static/css/bootstrap.css" rel="stylesheet">
+<link href="static/css/styles.css" rel="stylesheet">
+</head>
+
+
+<body>
+
+	<div style="padding-top:50px;" class="row">
+		<div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+			<div class="login-panel panel panel-default">
+				<div class="panel-heading">Task 3</div>
+				<div class="panel-body">
+					<form class="form-inline" id="term">
+						<label>Y   =   </label>
+						<div class="form-group">
+							<input width="100px" type="text" name="input_term" placeholder="Input with x here" class="form-control">
+						</div>
+						<button type="submit" class="pull-right btn btn-primary">Plot</button>
+					</form>
+
+					
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+			<div class="login-panel panel panel-default">
+				<div class="panel-heading">Plot</div>
+				<div id="canvas_panel" class="panel-body">
+					<canvas height="100" id="canvas" style="display: block;"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<script src="static/js/jquery-3.2.1.min.js"></script>
+	<script src="static/js/bootstrap.js"></script>
+	<script src="static/js/chart.js"></script>
+
+	<script>
+		var char1 = document.getElementById('canvas');
+		var query_line = new Chart(char1,{
+						type: 'line',
+						options: {
+					        legend: {
+					            display: false,
+					        }
+					    },
+						data:{
+							datasets:[{
+								data: [0],
+								fill: false,
+								backgroundColor: "rgba(75,192,192,0.4)",
+								borderColor: "rgba(27,203,212,1)",
+								pointBorderColor: "rgba(75,192,192,1)",
+								pointHoverBorderColor: "rgba(75,192,192,1)",
+								pointRadius: 1,
+					            pointHitRadius: 10,
+								lineTension: 0.2,
+					            borderWidth: 2
+							}],
+							labels: [0]
+						}
+					});
+
+		$("form#term").submit(function(){
+			var data = {
+					term: $('[name=input_term]').val()
+				};
+			$.ajax({
+				url: "plot",
+				method: 'POST',
+				data: JSON.stringify(data),
+				cache : false,
+				contentType : false,
+				processData : false,
+				success: function (response){
+					$("#canvas").remove();
+					$("#canvas_panel").append('<canvas height="200" id="canvas" style="display: block;"></canvas>');
+					response = JSON.parse(response);
+					var labels = [];
+					var data = [];
+					for (var i in response) {
+						labels.push(response[i].x);
+						data.push(response[i].y);
+					}
+					var char1 = document.getElementById('canvas');
+					var query_line = new Chart(char1,{
+						type: 'line',
+						options: {
+					        legend: {
+					            display: false,
+					        }
+					    },
+						data:{
+							datasets:[{
+								data: data,
+								fill: false,
+								backgroundColor: "rgba(75,192,192,0.4)",
+								borderColor: "rgba(27,203,212,1)",
+								pointBorderColor: "rgba(75,192,192,1)",
+								pointHoverBorderColor: "rgba(75,192,192,1)",
+								pointRadius: 1,
+					            pointHitRadius: 10,
+								lineTension: 0.2,
+					            borderWidth: 2
+							}],
+							labels: labels
+						}
+					});
+				},
+				error: function (xhr, ajaxOptions, thrownError){
+				}
+			});
+		return false;
+		});
+	</script>
+
+</body>
+</html>
